@@ -39,36 +39,17 @@ export const pay = async (
   totalCost,
   history
 ) => {
-  console.log(state);
-  if (!state.address) {
-    setState({ ...state, error: "Please provide your address" });
-  } else if (!state.phone) {
-    setState({ ...state, error: "Please provide your phone number" });
-  } else {
-    let nonce;
-    state.instance
-      .requestPaymentMethod()
-      .then((data) => {
-        dispatch({ type: "loading", payload: true });
-        nonce = data.nonce;
-        let paymentData = {
-          amountTotal: totalCost(),
-          paymentMethod: nonce,
-        };
-        getPaymentProcess(paymentData)
-          .then(async (res) => {
-            if (res) {
+
               let orderData = {
                 allProduct: JSON.parse(localStorage.getItem("cart")),
                 user: JSON.parse(localStorage.getItem("jwt")).user._id,
-                amount: res.transaction.amount,
-                transactionId: res.transaction.id,
+                amount: 0,
+                transactionId: "0",
                 address: state.address,
                 phone: state.phone,
               };
-              try {
-                let resposeData = await createOrder(orderData);
-                if (resposeData.success) {
+
+                await createOrder(orderData);
                   localStorage.setItem("cart", JSON.stringify([]));
                   dispatch({ type: "cartProduct", payload: null });
                   dispatch({ type: "cartTotalCost", payload: null });
@@ -76,21 +57,5 @@ export const pay = async (
                   setState({ clientToken: "", instance: {} });
                   dispatch({ type: "loading", payload: false });
                   return history.push("/");
-                } else if (resposeData.error) {
-                  console.log(resposeData.error);
-                }
-              } catch (error) {
-                console.log(error);
-              }
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
-        setState({ ...state, error: error.message });
-      });
-  }
+
 };

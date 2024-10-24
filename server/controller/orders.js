@@ -38,16 +38,7 @@ class Order {
 
   async postCreateOrder(req, res) {
     let { allProduct, user, amount, transactionId, address, phone } = req.body;
-    if (
-      !allProduct ||
-      !user ||
-      !amount ||
-      !transactionId ||
-      !address ||
-      !phone
-    ) {
-      return res.json({ message: "All filled must be required" });
-    } else {
+    console.log(req.body);
       try {
         let newOrder = new orderModel({
           allProduct,
@@ -64,7 +55,6 @@ class Order {
       } catch (err) {
         return res.json({ error: error });
       }
-    }
   }
 
   async postUpdateOrder(req, res) {
